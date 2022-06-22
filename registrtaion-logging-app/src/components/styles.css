@@ -28,6 +28,7 @@ span:not(.register) {
 .footer {
   display: flex;
   margin-top: 15px;
+  margin-bottom: 15px;
   border: 2px solid black;
   align-items: center;
   justify-content: center;
