@@ -1,7 +1,9 @@
 import './Create.css'
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef,useEffect } from 'react'
+import { useNavigate  } from 'react-router-dom'
 
-import useFetchCustomHook from '../../../Hooks/useFetchCustomHook'
+
+import useFetchCustomHook from '../../../Hooks/useFetchCustomHook.js'
 
 
 function Create() {
@@ -12,9 +14,9 @@ function Create() {
   const [ingredients, setIngredients] = useState([])
   const ingredientInput = useRef(null)
 
-  const { postData, data, error } = useFetchCustomHook('http://localhost:3000/recipes', 'POST')
-
-
+  const { postData, data } = useFetchCustomHook('http://localhost:3000/recipes', 'POST')
+  const navigate = useNavigate()
+  
   const handleSubmit = (e) => {
     e.preventDefault()
     postData({ title, ingredients, method, cookingTime: cookingTime + ' minutes' })
@@ -22,17 +24,21 @@ function Create() {
 
   const handleAdd = (e) => {
     e.preventDefault()
-    //remove any white space from the input
     const ing = newIngredient.trim()
 
-    // avoid duplicates into the array before submitted
     if (ing && !ingredients.includes(ing)) {
-      setIngredients(prevIngredients => [...prevIngredients, ing])
+      setIngredients(prevIngredients => [...prevIngredients, newIngredient])
     }
-    //clear the input field
     setNewIngredient('')
     ingredientInput.current.focus()
   }
+ 
+  //redirect the user when we get data response
+  useEffect(() => {
+    if (data) {
+      navigate('/account/home')
+    }
+  }, [data, navigate])
 
   return (
     <div className="create">
@@ -61,7 +67,7 @@ function Create() {
             <button onClick={handleAdd} className="btn">add</button>
           </div>
         </label>
-        <p>Current ingredients: {ingredients.map(i => (<em key={i}>{i }</em>))}</p>
+        <p>Current ingredients: {ingredients.map(i => (<em key={i}>{i},  </em>))}</p>
 
         <label>
           <span>Recipe Method:</span>
@@ -82,9 +88,9 @@ function Create() {
           />
         </label>
 
-        <button className="btn">submit</button>
+        <button  className="btn">submit</button>
       </form>
-    </div>
+    </div> 
   )
 }
 
