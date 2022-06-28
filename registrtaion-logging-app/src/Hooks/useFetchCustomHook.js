@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react'
-const useFetchCustomHook = (url, _options) => {
+import { useState, useEffect, useCallback } from "react"
+
+ const useFetchCustomHook = (url, method = "GET") => {
   const [data, setData] = useState(null)
   const [isPending, setIsPending] = useState(false)
   const [error, setError] = useState(null)
-  const [option, setOptions] = useState(null)
+  const [options, setOptions] = useState(null)
 
-
-  const postData = () => {
+  const postData = (postData) => {
     setOptions({
       method: "POST",
       headers: {
@@ -16,62 +16,51 @@ const useFetchCustomHook = (url, _options) => {
     })
   }
 
+  useEffect(() => {
 
-  // The React useCallback Hook returns a memoized callback function.
-  //  Think of memoization as caching a value so that it does not need
-  //   to be recalculated. This allows us to isolate resource intensive
-  //    functions so that they will not automatically run on every render
-
-  //arrays or objects added to dependencies will trigger an infinite loop
-  //use  useRef to wrap an object/array argument
-  //which is a useEffect dependancy 
-  const options = useRef(_options).current
-
-  const fetchData = useCallback(
-    async (fetchOptions) => {
+    const fetchData = useCallback( async (fetchOptions) => {
       const controller = new AbortController()
+
       setIsPending(true)
+      
       try {
-        const response = await fetch(url, { ...fetchOptions, signal: controller.signal })
-        if (!response.ok) {
-          throw new Error(response.statusText)
+        const res = await fetch(url, { ...fetchOptions, signal: controller.signal })
+        if(!res.ok) {
+          throw new Error(res.statusText)
         }
-        const json = await response.json()
+        const data = await res.json()
+
         setIsPending(false)
-        setData(json)
+        setData(data)
         setError(null)
       } catch (err) {
-        if (err.name === 'AbortError') {
-          console.log('the fetch was aborted')
+        if (err.name === "AbortError") {
+          console.log("the fetch was aborted")
         } else {
-          setError('data fetching failed ')
-          console.log(error.message)
-
+          setIsPending(false)
+          setError('Could not fetch the data')
         }
       }
-      return (() => {
-        controller.abort()
-      })
-
       // invoke the function
-      if (method === "GET") {
-        fetchData()
-      }
-      if (method === "POST" && option) {
-        fetchData(option)
-      }
+    if (method === "GET") {
+      fetchData()
+    }
+    if (method === "POST" && options) {
+      fetchData(options)
+    }
 
-      return () => {
-        controller.abort()
-      }
+    return () => {
+      controller.abort()
+    }
 
+    }
 
-    }, [url, options, option]
-  )
-  useEffect(() => {
-    fetchData()
-      .catch(err => console.log(err))
-  }, [fetchData])
+    
+  , )
+  },[url, method, options])
+
   return { data, isPending, error, postData }
+
 }
+
 export default useFetchCustomHook

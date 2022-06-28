@@ -3,11 +3,10 @@ import React, {useState} from 'react'
 
 import RecipeList from '../../../components/RecipeList/RecipeList'
 
-import useFetchCustomHook from '../../../Hooks/useFetchCustomHook'
+import useFetch from '../../../Hooks/useFetch'
 
 function HomeReceipe() {
-  const [url, setUrl] = useState('http://localhost:3000/recipes')
-  const { data: available_recipes, isPending: isLoading, error } = useFetchCustomHook(url, {type: 'GET'})
+  const { data: available_recipes, isPending: isLoading, error} = useFetch('http://localhost:3000/recipes')
  
   return (
     <div className="home">
