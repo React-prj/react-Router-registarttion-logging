@@ -47,7 +47,6 @@ function App() {
             {/* receipe routes  */}
             <Route path="/account/home" element={<Protected><HomeReceipe /></Protected>} />
             <Route path="/account/create" element={<Protected><Create /></Protected>} />
-            <Route path="/account/receipe" element={<Protected><Receipe /></Protected>} />
             <Route path="/account/search" element={<Protected><Search /></Protected>} />
             {/*  <Switch> will start looking for a matching e.gonly match /about and not /:user */}
             {/* this route param can be extracted and should match  */}

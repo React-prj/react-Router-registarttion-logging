@@ -18,10 +18,10 @@ const useFetch = (url, method = "GET") => {
     })
   }
 
-  const controller = new AbortController()
 
 
   const fetchData = useCallback( async (fetchOptions) => {
+    const controller = new AbortController()
     setIsPending(true)
     
     try {
@@ -55,13 +55,13 @@ const useFetch = (url, method = "GET") => {
     return () => {
       controller.abort()
     }
-  }, [method, options, url, controller])
+  }, [method, options, url])
 
   useEffect(() => {
     fetchData()
   }, [fetchData])
 
-  return { data, isPending, error, postData }
+  return { data, isPending, error, postData  }
 }
 
 export default useFetch
