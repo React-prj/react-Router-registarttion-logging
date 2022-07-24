@@ -18,16 +18,15 @@ const Navbar = () => {
 
   return (
     <div className='navbar'>
-    
-    <Link to='/account/home' className='brand'><h1>Home Recipes</h1> </Link>
-        <Link to='/account/create' className='right-links'>Create </Link>
-        <Link to='/account/receipe' className='right-links'>Recipies</Link>
-        <Link to='/account/search' className='right-links'>{<Searchbar />} </Link>
-        {user?.displayName ? (
-          <button onClick={handleSignOut}>Logout</button>
-        ) : (
-          <Link to='/login'>Sign in</Link>
-        )}        
+
+      <Link to='/account/home' className='brand'><h1>Home Recipes</h1> </Link>
+      <Link to='/account/create' className='right-links'>Create </Link>
+      <Searchbar />
+      {user?.displayName ? (
+        <button onClick={handleSignOut}>Logout</button>
+      ) : (
+        <Link to='/login'>Sign in</Link>
+      )}
     </div>
   );
 };

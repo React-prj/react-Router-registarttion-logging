@@ -1,13 +1,18 @@
+import { useState, useEffect, useCallback,useRef, useMemo } from "react"
 
-
-import { useState, useEffect , useCallback} from "react"
-
-const useFetch = (url, method = "GET") => {
+const useFetch = (url, method="GET") => {
   const [data, setData] = useState(null)
   const [isPending, setIsPending] = useState(false)
   const [error, setError] = useState(null)
+  //setOptions is keeping track of the options object containing  method post and headers etc
   const [options, setOptions] = useState(null)
+  const [fetchOptions, setFetchOptions] = useState(null)
 
+
+  //arrays or objects added to dependencies will trigger an infinite loop
+  //use  useRef to wrap an object/array argument
+  //which is a useEffect dependancy 
+   const  fetchType = useRef(method).current
   const postData = (postData) => {
     setOptions({
       method: "POST",
@@ -19,18 +24,18 @@ const useFetch = (url, method = "GET") => {
   }
 
 
-
-  const fetchData = useCallback( async (fetchOptions) => {
+  const fetchData = useCallback(async () => {
     const controller = new AbortController()
+
     setIsPending(true)
-    
+
     try {
       const res = await fetch(url, { ...fetchOptions, signal: controller.signal })
-      if(!res.ok) {
+      if (!res.ok) {
         throw new Error(res.statusText)
       }
       const data = await res.json()
-
+      setFetchOptions(fetchOptions)
       setIsPending(false)
       setData(data)
       setError(null)
@@ -42,26 +47,25 @@ const useFetch = (url, method = "GET") => {
         setError('Could not fetch the data')
       }
     }
-
-    
     // invoke the function
-    if (method === "GET") {
+    if (fetchType === "GET") {
       fetchData()
     }
-    if (method === "POST" && options) {
+    if (fetchType === "POST" && options) {
       fetchData(options)
     }
 
     return () => {
       controller.abort()
     }
-  }, [method, options, url])
+  }, [fetchOptions, fetchType, options, url])
+
 
   useEffect(() => {
     fetchData()
   }, [fetchData])
 
-  return { data, isPending, error, postData  }
+  return { data, isPending, error, postData }
 }
 
 export default useFetch

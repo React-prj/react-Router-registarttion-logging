@@ -1,10 +1,7 @@
 import './Create.css'
 import React, { useState, useRef,useEffect } from 'react'
 import { useNavigate  } from 'react-router-dom'
-
-
-import useFetchCustomHook from '../../../Hooks/useFetchCustomHook.js'
-
+import useFetch from '../../../Hooks/useFetch.js'
 
 function Create() {
   const [title, setTitle] = useState('')
@@ -14,31 +11,34 @@ function Create() {
   const [ingredients, setIngredients] = useState([])
   const ingredientInput = useRef(null)
 
-  const { postData, data } = useFetchCustomHook('http://localhost:3000/recipes', 'POST')
+  const { postData, data, error } = useFetch('http://localhost:3000/recipes', 'POST')
   const navigate = useNavigate()
   
   const handleSubmit = (e) => {
     e.preventDefault()
+    console.log({ title, ingredients, method, cookingTime: cookingTime + ' minutes' })
     postData({ title, ingredients, method, cookingTime: cookingTime + ' minutes' })
   }
 
   const handleAdd = (e) => {
     e.preventDefault()
+    //remove white spaces in the ingredient 
     const ing = newIngredient.trim()
 
+    //make sure we have the ing data and avoid re-adding same ingredient 
     if (ing && !ingredients.includes(ing)) {
       setIngredients(prevIngredients => [...prevIngredients, newIngredient])
     }
     setNewIngredient('')
     ingredientInput.current.focus()
   }
- 
+  
   //redirect the user when we get data response
-  useEffect(() => {
-    if (data) {
-      navigate('/account/home')
-    }
-  }, [data, navigate])
+  // useEffect(() => {
+  //   if (data) {
+  //     navigate('/account/home')
+  //   }
+  // }, [data, navigate])
 
   return (
     <div className="create">
@@ -88,7 +88,7 @@ function Create() {
           />
         </label>
 
-        <button  className="btn">submit</button>
+        <button className="btn">submit</button>
       </form>
     </div> 
   )
